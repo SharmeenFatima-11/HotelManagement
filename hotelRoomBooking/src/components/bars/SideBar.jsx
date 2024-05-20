@@ -1,18 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import DashRoutes from "../../constants/sidebarRoutes";
 
 const Sidebar = () => {
-  const [Dash, setDash] = useState(DashRoutes);
+  const [Dash, setDash] = useState([]);
+
+  useEffect(() => {
+    const storedDash = localStorage.getItem('dash');
+    if (!storedDash) {
+      localStorage.setItem('dash', JSON.stringify(DashRoutes));
+      setDash(DashRoutes);
+    } else {
+      setDash(JSON.parse(storedDash));
+    }
+  }, []);
 
   const changeRoute = (index) => {
     setDash((prevDash) => {
       const newDash = prevDash.map((item, i) => ({
         ...item,
-        select: i === index ? true : false,
+        select: i === index,
       }));
 
-      // Set the state
+      // Update local storage
+      localStorage.setItem('dash', JSON.stringify(newDash));
+
+      // Return new state
       return newDash;
     });
   };
